@@ -1,2 +1,29 @@
-﻿  Main.cpp
+﻿  SIFT_Matcher.cpp
+d:\c++ projects\projects\opencvtest\opencvtest\sift_matcher.cpp(144): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\sift_matcher.cpp(148): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\sift_matcher.cpp(149): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\sift_matcher.cpp(150): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\sift_matcher.cpp(151): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\sift_matcher.cpp(152): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\sift_matcher.cpp(164): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+  RANSAC_Processor.cpp
+  MathUtils.cpp
+d:\c++ projects\projects\opencvtest\opencvtest\mathutils.cpp(59): warning C4244: “=”: 从“double”转换到“uchar”，可能丢失数据
+  Main.cpp
+d:\c++ projects\projects\opencvtest\opencvtest\main.cpp(38): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\main.cpp(39): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+  Homography.cpp
+d:\c++ projects\projects\opencvtest\opencvtest\homography.cpp(10): warning C4018: “<”: 有符号/无符号不匹配
+d:\c++ projects\projects\opencvtest\opencvtest\homography.cpp(24): warning C4018: “<”: 有符号/无符号不匹配
+  GridBox.cpp
+  APAP_Processor.cpp
+d:\c++ projects\projects\opencvtest\opencvtest\apap_processor.cpp(75): warning C4244: “参数”: 从“int”转换到“const float”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\apap_processor.cpp(76): warning C4244: “参数”: 从“int”转换到“const float”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\apap_processor.cpp(86): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\apap_processor.cpp(87): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\apap_processor.cpp(88): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\apap_processor.cpp(89): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+d:\c++ projects\projects\opencvtest\opencvtest\apap_processor.cpp(77): warning C4101: “min_y”: 未引用的局部变量
+d:\c++ projects\projects\opencvtest\opencvtest\apap_processor.cpp(77): warning C4101: “min_x”: 未引用的局部变量
+  正在生成代码...
   opencvTest.vcxproj -> D:\C++ Projects\Projects\opencvTest\Debug\opencvTest.exe

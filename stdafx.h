@@ -15,35 +15,13 @@ extern "C" {
 #include <vl/sift.h>
 }
 #define  _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 using namespace cv;
 using namespace std;
 using namespace Eigen;
 
-const double gamma = 0.0015;
+const double gamma = 0.0025;
 const double sigma = 12.0;
 const int C1 = 50, C2 = 50;//Grid count
-const int width = 1525, height = 893;//warp image
+const int width = 2025, height = 1193;//warp image
 const double Threshold = 4.5;
-const double MAXFLOAT = numeric_limits<float>::max();
-const double GLOBAL_HOMOGRAPHY_MAX_INLIERS_DIST = 5.;
-const double  LOCAL_HOMOGRAPHY_MAX_INLIERS_DIST = 3.;
-const    int  LOCAL_HOMOGRAPHY_MIN_FEATURES_COUNT = 40;
-
-const    int SIFT_LEVEL_COUNT = 4;
-const    int SIFT_MINIMUM_OCTAVE_INDEX = 0;
-const double SIFT_PEAK_THRESH = 0.;
-const double SIFT_EDGE_THRESH = 10.;
-
-const double INLIER_TOLERANT_STD_DISTANCE = 4.25;
-
-const double GLOBAL_TRUE_PROBABILITY = 0.225;
-const double LOCAL_TRUE_PROBABILITY = 0.2;
-const double OPENCV_DEFAULT_CONFIDENCE = 0.995;
-
-const double STRONG_CONSTRAINT = 1e4;
-
-const int CRITERIA_MAX_COUNT = 1000;
-const double CRITERIA_EPSILON = DBL_EPSILON;
-
-const double TOLERANT_ANGLE = 1.5;

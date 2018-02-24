@@ -154,7 +154,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="APAP_Processor.cpp" />
-    <ClCompile Include="FeatureMatcher.cpp" />
     <ClCompile Include="GridBox.cpp" />
     <ClCompile Include="Homography.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -164,7 +163,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="APAP_Processor.h" />
-    <ClInclude Include="FeatureMatcher.h" />
     <ClInclude Include="GridBox.h" />
     <ClInclude Include="Homography.h" />
     <ClInclude Include="MathUtils.h" />

@@ -7,7 +7,8 @@
 using namespace cv;
 using namespace std;
 using namespace Eigen;
-MatrixXd calculate_Wi_forPoint(vector<Point2d> points, double x, double y)
+vector<Point2d> points;
+MatrixXd calculate_Wi_forPoint(double x, double y)
 {
 	const double sigma_squared = sigma * sigma;
 	MatrixXd Wi(2 * points.size(), 2 * points.size());
@@ -25,16 +26,20 @@ MatrixXd calculate_Wi_forPoint(vector<Point2d> points, double x, double y)
 }
 
 //计算每一个x*对应的*i
-void calculate_Wi_Matrices(Mat img, vector<Point2d> obj, vector<MatrixXd>& vec)
+void calculate_Wi_Matrices(Mat img, vector<Point2d>& obj, vector<MatrixXd>& vec)
 {
+	points = obj;
 	int Width = img.size().width, Height = img.size().height;
 	ArrayXd heightArray = ArrayXd::LinSpaced(C1 + 1, 0, Height - 1),
 		widthArray = ArrayXd::LinSpaced(C2 + 1, 0, Width - 1);//分割
+	ofstream fout("Wi.txt");
+	int count = 0;
 	for (int i = 0; i < C1; i++) {
 		double y = (heightArray(i) + heightArray(i + 1)) / 2;
 		for (int j = 0; j < C2; j++) {
+		//	cout << "i = " << i << ", j = " << j << endl;
 			double x = (widthArray(j) + widthArray(j + 1)) / 2;
-			MatrixXd Wi = calculate_Wi_forPoint(obj, x, y);
+			MatrixXd Wi = calculate_Wi_forPoint(x, y);
 			vec.push_back(Wi);
 		}
 	}
@@ -61,7 +66,7 @@ vector<Matrix3d> calculate_CellHomography(vector<MatrixXd>& matrices, MatrixXd& 
 }
 
 
-GridBox** getIndex(const Mat& img, int C1, int C2, int& offset_x, int& offset_y, vector<Matrix3d> H_vec)
+GridBox** getIndex(const Mat& img, int C1, int C2, int offset_x, int offset_y, vector<Matrix3d> H_vec)
 {
 	GridBox** a = new GridBox*[C2 + 1];
 	for (int i = 0; i < C2 + 1; i++)
@@ -82,11 +87,11 @@ GridBox** getIndex(const Mat& img, int C1, int C2, int& offset_x, int& offset_y,
 			ConvertCoordinates(widthArray[gx + 1], heightArray[gy], toprightx, toprighty, H_vec[H_index]);
 			ConvertCoordinates(widthArray[gx], heightArray[gy + 1], bottomleftx, bottomlefty, H_vec[H_index]);
 			ConvertCoordinates(widthArray[gx + 1], heightArray[gy + 1], bottomrightx, bottomrighty, H_vec[H_index]);
-			GridBox gbox = GridBox(Point2d(topleftx, toplefty),
-									Point2d(toprightx, toprighty),
-									Point2d(bottomleftx, bottomlefty),
-									Point2d(bottomrightx, bottomrighty));
-			a[gx][gy] = gbox;
+			GridBox gbox = GridBox(Point2d(topleftx + offset_x, toplefty + offset_y),
+									Point2d(toprightx + offset_x, toprighty + offset_y),
+									Point2d(bottomleftx + offset_x, bottomlefty + offset_y),
+									Point2d(bottomrightx + offset_x, bottomrighty + offset_y));
+			a[gy][gx] = gbox;
 		}
 	return a;
 }
@@ -97,7 +102,7 @@ void findGrid(int &gx, int &gy, double x, double y, GridBox** grids)
 	for (int grid_x = 0; grid_x < C2; grid_x++)
 		for (int grid_y = 0; grid_y < C1; grid_y++)
 		{
-			if (grids[grid_x][grid_y].contains(x, y))
+			if (grids[grid_y][grid_x].contains(x, y))
 			{
 				gx = grid_x;
 				gy = grid_y;
@@ -111,58 +116,47 @@ void findGrid(int &gx, int &gy, double x, double y, GridBox** grids)
 void ConvertImage(const Mat& img, Mat& target, vector<Matrix3d> H_vec, int C1, int C2)
 {
 	int Width = img.size().width, Height = img.size().height;
-	int x_offset, y_offset;
+	int x_offset = 0, y_offset = 100;
 	GridBox** grids = getIndex(img, C1, C2, x_offset, y_offset, H_vec);
-	target = Mat::zeros(height, width, CV_8UC3);
+	target = Mat::zeros(height, width, img.type());
 	uchar b, g, r;
-	int GridWidth = Width / C2, GridHeight = Height / C1;
-
-	int min_x = 1000, min_y = 1000, max_x = -1, max_y = -1;
-
-	bool debug = false;//debug
-	bool appear[2500];
-	for (int i = 0; i < 2500; i++)
-		appear[i] = false;
-	if (debug)
-	{
-		for (int y = 0; y < height; y++)
-			for (int x = 0; x < width; x++)
-			{
-				int gx = x / C2, gy = y / C1;
+	
+	for (int y = y_offset; y < height; y++) {
+		for (int x = x_offset; x < width; x++)
+		{
+			int gx = -1, gy = -1;
+			findGrid(gx, gy, x, y, grids);
+			if (gx >= 0 && gy >= 0) {
 				int H_index = gx + gy * C2;
-				double d_nx, d_ny;
-				ConvertCoordinates(x, y, d_nx, d_ny, H_vec[H_index].inverse());
-				if (d_nx >= 0 && d_nx <= Width && d_ny >= 0 && d_ny <= Height)
-				{
-					ConvertPoint(img, Width, Height, d_nx, d_ny, b, g, r);
-					int y_ = y, x_ = x;
-					target.at<Vec3b>(y_, x_) = Vec3b(b, g, r);
-				}
-			}
-	}
-	else
-	{
-		for (int y = 0; y < height; y++)
-			for (int x = 0; x < width; x++)
-			{
-				int grid_x = 0, grid_y = 0;
-				findGrid(grid_x, grid_y, x, y, grids);
-				int H_index = grid_x + grid_y * C2;
-				appear[H_index] = true;
-				double d_nx, d_ny;
-				ConvertCoordinates(x, y, d_nx, d_ny, H_vec[H_index].inverse());
-				if (d_nx >= 0 && d_nx <= Width && d_ny >= 0 && d_ny <= Height)
-				{
-					ConvertPoint(img, Width, Height, d_nx, d_ny, b, g, r);
-					int y_ = y, x_ = x;
-					target.at<Vec3b>(y_, x_) = Vec3b(b, g, r);
-				}
-			}
+				double t_nx, t_ny;
+				ConvertCoordinates(x - x_offset, y - y_offset, t_nx, t_ny, H_vec[H_index].inverse());
 
-		for (int i = 0; i < 2500; i++)
-			if (!appear[i])
-				cout << "not appeared : " << i << endl;
+				if (t_nx >= 0 && t_nx <= Width && t_ny >= 0 && t_ny <= Height)
+				{
+					ConvertPoint(img, Width, Height, t_nx, t_ny, b, g, r);
+					target.at<Vec3b>(y, x) = Vec3b(b, g, r);
+				}
+			}
+		}
 	}
+	Mat gridMat = Mat::zeros(height, width, img.type());
+	for (int gy=0;gy<C1;gy++)
+		for (int gx = 0; gx < C2; gx++)
+		{
+			GridBox grid = grids[gy][gx];
+			double* verty = grid.verty, *vertx = grid.vertx;
+			int i, j;
+			Point2d p1, p2;
+			
+			for (i = 0, j = 3; i < 4; j = i++)
+			{
+				p1 = Point2d(vertx[i], verty[i]);
+				p2 = Point2d(vertx[j], verty[j]);
+				line(gridMat, p1, p2, Scalar(255, 0, 0), 1, CV_AA);
+			}
+		}
+	imshow("warp img 2", target);
+	imshow("grids", gridMat);
 }
 
 
@@ -192,7 +186,7 @@ void warpImage(const Mat& image_1, const Mat& img_2, Mat& target)
 	uchar b1, g1, r1, b2, g2, r2;
 	target = Mat::zeros(height, width, CV_8UC3);
 	Mat img_1 = Mat::zeros(width, height, CV_8UC3);
-	image_1.copyTo(img_1(Rect(0, 0, image_1.size().width, image_1.size().height)));
+	image_1.copyTo(img_1(Rect(0, 100, image_1.size().width, image_1.size().height)));
 	for (int y = 0; y < height; y++)
 		for (int x = 0; x < width; x++)
 		{

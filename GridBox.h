@@ -3,10 +3,7 @@
 class GridBox
 {
 public:
-	Point2f topleft,
-		topright,
-		botleft,
-		botright;
+	double vertx[4], verty[4];
 	GridBox(Point2d tl, Point2d tr, Point2d bl, Point2d br);
 	GridBox();
 	~GridBox();
